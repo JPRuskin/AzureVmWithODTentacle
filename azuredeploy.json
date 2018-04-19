@@ -4,7 +4,10 @@
     "parameters": {
         "baseName": {
             "type": "string",
-            "defaultValue": "AUSE2-FRGQA"
+            "defaultValue": "AUSE2-FRGQA",
+            "metadata": {
+                "description": "Prefix to all deployed items, i.e. '$baseName-nic','$baseName-ip', etc."
+            }
         },
         "virtualMachineSize": {
             "type": "string",
@@ -12,27 +15,44 @@
         },
         "adminUsername": {
             "type": "string",
-            "defaultValue": "ForgeQA"
+            "defaultValue": "adminuser",
+            "metadata": {
+                "description": "Admin Username for the VM"
+            }
         },
         "adminPassword": {
             "type": "securestring",
-            "defaultValue": ""
+            "metadata": {
+                "description": "Admin Password for the VM"
+            }
         },
         "autoShutdownTime": {
             "type": "string",
-            "defaultValue": "19:00"
+            "defaultValue": "19:00",
+            "metadata": {
+                "description": "Time (UTC) to automatically shut down the VM. Will not shut down if not provided."
+            }
         },
         "autoShutdownNotificationEmail": {
             "type": "string",
-            "defaultValue": "d4b9b74e.questionmark365.onmicrosoft.com@amer.teams.ms"
+            "defaultValue": "",
+            "metadata": {
+                "description": "E-mail address to send shutdown notifications to. Notifications will not be enabled if this is not present."
+            }
         },
         "OctopusDeployApiUrl": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "",
+            "metadata": {
+                "description": "Fully qualified URL to Octopus Deploy, i.e. 'https://octopus.contoso.com'. Octopus Tentacle will not be installed if this is not present."
+            }
         },
         "OctopusDeployApiKey": {
-            "type": "string",
-            "defaultValue": ""
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Generated API key for access to Octopus Deploy. Octopus Tentacle will not be installed if this is not present."
+            }
         }
     },
     "variables": {
@@ -94,7 +114,7 @@
                     "type": "extensions",
                     "name": "InstallOctopusDsc",
                     "location": "[resourceGroup().location]",
-                    "condition": "[not(empty(parameters('OctopusDeployApiKey')))]",
+                    "condition": "[and(not(empty(parameters('OctopusDeployApiKey'))), not(empty(parameters('OctopusDeployApiKey'))))]",
                     "dependsOn": [
                         "[resourceId('Microsoft.Compute/virtualMachines', variables('virtualMachineName'))]"
                     ],                    
@@ -117,7 +137,7 @@
                     "apiVersion": "2017-03-30",
                     "name": "InstallOctopusTentacle",
                     "location": "[resourceGroup().location]",
-                    "condition": "[not(empty(parameters('OctopusDeployApiKey')))]",
+                    "condition": "[and(not(empty(parameters('OctopusDeployApiKey'))), not(empty(parameters('OctopusDeployApiKey'))))]",
                     "dependsOn": [
                         "[resourceId('Microsoft.Compute/virtualMachines', variables('virtualMachineName'))]",
                         "InstallOctopusDsc"
@@ -150,7 +170,7 @@
             "apiVersion": "2017-04-26-preview",
             "location": "[resourceGroup().location]",
             "properties": {
-                "status": "Enabled",
+                "status": "[if(empty(parameters('autoShutdownTime')), 'Disabled', 'Enabled')]",
                 "taskType": "ComputeVmShutdownTask",
                 "dailyRecurrence": {
                     "time": "[parameters('autoShutdownTime')]"
