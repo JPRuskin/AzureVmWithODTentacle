@@ -64,7 +64,8 @@ $DeploymentParameters = @{
     ResourceGroupName       = $ResourceGroupName
     TemplateFile            = (Resolve-Path $TemplateFilePath)
     TemplateParameterObject = @{
-        baseName = $ResourceGroupName
+        adminUsername = $LabCredential.Username
+        adminPassword = $LabCredential.GetNetworkCredential().Password
     }
 }
 if ($PSBoundParameters.ContainsKey('OctopusDeployApiKey')) {
@@ -73,10 +74,6 @@ if ($PSBoundParameters.ContainsKey('OctopusDeployApiKey')) {
 }
 if ($PSBoundParameters.ContainsKey('ShutdownNotificationEmail')) {
     $DeploymentParameters.TemplateParameterObject.autoShutdownNotificationEmail = $ShutdownNotificationEmail
-}
-if ($PSBoundParameters.ContainsKey('LabCredential')) {
-    $DeploymentParameters.TemplateParameterObject.adminUsername = $LabCredential.Username
-    $DeploymentParameters.TemplateParameterObject.adminPassword = $LabCredential.GetNetworkCredential().Password
 }
 
 # Start the deployment

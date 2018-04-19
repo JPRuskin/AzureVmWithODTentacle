@@ -4,7 +4,7 @@
     "parameters": {
         "baseName": {
             "type": "string",
-            "defaultValue": "AUSE2-FRGQA",
+            "defaultValue": "[resourceGroup().name]",
             "metadata": {
                 "description": "Prefix to all deployed items, i.e. '$baseName-nic','$baseName-ip', etc."
             }
