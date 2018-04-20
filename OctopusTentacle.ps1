@@ -10,7 +10,7 @@ configuration OctopusTentacle {
         cTentacleAgent OctopusTentacle {
             Ensure                      = "Present"
             State                       = "Started"
-            Name                        = "Tentacle"
+            Name                        = "Temp"
             ApiKey                      = $OctopusApiKey
             OctopusServerUrl            = $OctopusTarget
             Environments                = "Forge.local"
